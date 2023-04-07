@@ -12,6 +12,8 @@
     <RepositoryUrl>https://github.com/GabrielFrigo4/WebCam-Sharp</RepositoryUrl>
     <PackageTags>WebCam</PackageTags>
     <PackageIcon>WebCam.png</PackageIcon>
+    <Authors>Gabriel Frigo</Authors>
+    <Description>WebCam lib for c#</Description>
   </PropertyGroup>
 
   <ItemGroup>
