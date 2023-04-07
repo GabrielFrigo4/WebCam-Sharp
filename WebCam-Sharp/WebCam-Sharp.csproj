@@ -11,6 +11,7 @@
     <PackageProjectUrl>https://github.com/GabrielFrigo4/WebCam-Sharp</PackageProjectUrl>
     <RepositoryUrl>https://github.com/GabrielFrigo4/WebCam-Sharp</RepositoryUrl>
     <PackageTags>WebCam</PackageTags>
+    <PackageIcon>WebCam.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +19,13 @@
     <PackageReference Include="OpenCvSharp4.Extensions" Version="4.7.0.20230115" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.7.0.20230115" />
     <PackageReference Include="System.Management" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="WebCam.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
