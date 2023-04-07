@@ -5,7 +5,7 @@ using System.Management;
 using System.Reflection;
 using Size = System.Drawing.Size;
 
-namespace WebCam_Sharp.Code;
+namespace WebCam_Sharp.Camera;
 public class WebCam
 {
     #region Vars
