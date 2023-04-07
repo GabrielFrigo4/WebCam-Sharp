@@ -1,7 +1,7 @@
 ﻿using OpenCvSharp;
 using Size = System.Drawing.Size;
 
-namespace CameraOS.WebCam_Sharp;
+namespace WebCam_Sharp.Code;
 public struct WebCamDevice
 {
     public int Id { get; private set; }

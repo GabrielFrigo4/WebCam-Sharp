@@ -5,7 +5,7 @@ using System.Management;
 using System.Reflection;
 using Size = System.Drawing.Size;
 
-namespace CameraOS.WebCam_Sharp;
+namespace WebCam_Sharp.Code;
 public class WebCam
 {
     #region Vars
@@ -156,7 +156,7 @@ public class WebCam
         }
 
         WebCamDevice[] devices = new WebCamDevice[cameraInfos.Count];
-        Parallel.For(0, cameraInfos.Count, (int id) =>
+        Parallel.For(0, cameraInfos.Count, (id) =>
         {
             VideoCapture _videoCapture = new(id);
             var _tup = cameraInfos[id];
@@ -167,7 +167,7 @@ public class WebCam
             _size.Width = (int)_videoCapture.Get(VideoCaptureProperties.FrameWidth);
             _size.Height = (int)_videoCapture.Get(VideoCaptureProperties.FrameHeight);
 
-            devices[id] = new(id, _size, _videoCapture, 
+            devices[id] = new(id, _size, _videoCapture,
                 _tup.Item1, _tup.Item2, _tup.Item3, _tup.Item4);
         });
 
