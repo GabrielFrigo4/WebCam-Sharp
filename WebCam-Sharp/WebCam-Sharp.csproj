@@ -8,6 +8,9 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>WebCam-Sharp</Title>
+    <PackageProjectUrl>https://github.com/GabrielFrigo4/WebCam-Sharp</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/GabrielFrigo4/WebCam-Sharp</RepositoryUrl>
+    <PackageTags>WebCam</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
