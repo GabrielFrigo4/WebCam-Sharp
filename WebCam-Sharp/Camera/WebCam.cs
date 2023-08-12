@@ -1,7 +1,6 @@
 ﻿using OpenCvSharp;
 using OpenCvSharp.Extensions;
 using System.Drawing;
-using System.Management;
 using System.Reflection;
 using Size = System.Drawing.Size;
 
@@ -12,8 +11,8 @@ public class WebCam
     public EventHandler<Bitmap>? UpdateFrame;
     public object SyncRoot = new();
 
-    public WebCamDevice[] Devices { get; private set; }
-    public WebCamDevice CurrentDevice { get; private set; }
+    public int CurrentDeviceID { get; private set; } = 0;
+    public WebCamDevice CurrentDevice { get => WebCamDevice.Devices[CurrentDeviceID]; }
 
     private bool IsRunning { get; set; }
 
@@ -37,24 +36,41 @@ public class WebCam
     }
 
     private readonly Mat matFrame;
-    private VideoCapture videoCapture;
+    private readonly VideoCapture videoCapture;
     private Bitmap? image = null;
     #endregion
 
     #region WebCam
     public WebCam(int deviceId = 0, int fps = 60)
     {
-        Environment.SetEnvironmentVariable("OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS", "0");
         FrameRate = fps;
         matFrame = new Mat();
-        Devices = GetDevices();
-        CurrentDevice = Devices[deviceId];
-        CurrentDevice.UpdateVideoCapture(out videoCapture);
+        WebCamDevice.Init();
+        CurrentDeviceID = deviceId;
+        videoCapture = CurrentDevice.CreateVideoCapture();
     }
 
     public void Init()
     {
         Task.Run(StartRunning);
+    }
+
+    public async void SetDevice(int deviceId, bool async = true)
+    {
+        void SetTask()
+        {
+            lock (SyncRoot)
+            {
+                if (CurrentDeviceID != deviceId)
+                {
+                    CurrentDeviceID = deviceId;
+                    CurrentDevice.UpdateVideoCapture(videoCapture);
+                }
+            }
+        }
+
+        if (!async) SetTask();
+        else await Task.Run(SetTask);
     }
 
     public async void SetDevice(WebCamDevice device, bool async = true)
@@ -63,11 +79,7 @@ public class WebCam
         {
             lock (SyncRoot)
             {
-                if (CurrentDevice != device)
-                {
-                    CurrentDevice = device;
-                    CurrentDevice.UpdateVideoCapture(out videoCapture);
-                }
+                SetDevice(device.Id, async);
             }
         }
 
@@ -119,54 +131,6 @@ public class WebCam
             if (result > FrameMinDelay) await Task.Delay(result);
             else await Task.Delay(FrameMinDelay);
         }
-    }
-
-    private static WebCamDevice[] GetDevices()
-    {
-        List<Tuple<string, string, string, string>> cameraInfos = new();
-        string queryCode = "SELECT * FROM Win32_PnPEntity WHERE (PNPClass = 'Image' OR PNPClass = 'Camera')";
-        using (ManagementObjectSearcher searcher = new(queryCode))
-        {
-            foreach (var device in searcher.Get())
-            {
-                string name = string.Empty;
-                string cap = string.Empty;
-                string desc = string.Empty;
-                string man = string.Empty;
-
-                if (device["Name"] is string _name)
-                    name = _name;
-
-                if (device["Caption"] is string _cap)
-                    cap = _cap;
-
-                if (device["Description"] is string _desc)
-                    desc = _desc;
-
-                if (device["Manufacturer"] is string _man)
-                    man = _man;
-
-                cameraInfos.Add(new(name, cap, desc, man));
-            }
-        }
-
-        WebCamDevice[] devices = new WebCamDevice[cameraInfos.Count];
-        Parallel.For(0, cameraInfos.Count, (id) =>
-        {
-            VideoCapture _videoCapture = new(id);
-            var _tup = cameraInfos[id];
-            Size _size = new();
-
-            _videoCapture.Set(VideoCaptureProperties.FrameHeight, int.MaxValue);
-            _videoCapture.Set(VideoCaptureProperties.FrameWidth, int.MaxValue);
-            _size.Width = (int)_videoCapture.Get(VideoCaptureProperties.FrameWidth);
-            _size.Height = (int)_videoCapture.Get(VideoCaptureProperties.FrameHeight);
-
-            devices[id] = new(id, _size, _videoCapture,
-                _tup.Item1, _tup.Item2, _tup.Item3, _tup.Item4);
-        });
-
-        return devices;
     }
 
     public static Version GetVersion()
