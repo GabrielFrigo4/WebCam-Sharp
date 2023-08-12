@@ -2,10 +2,11 @@
 using OpenCvSharp.Extensions;
 using System.Drawing;
 using System.Reflection;
+
 using Size = System.Drawing.Size;
 
 namespace WebCam_Sharp.Camera;
-public class WebCam
+public class WebCam: IDisposable
 {
     #region Vars
     public EventHandler<Bitmap>? UpdateFrame;
@@ -17,10 +18,10 @@ public class WebCam
     private bool IsRunning { get; set; }
 
     private TimeSpan _frameDelay;
-    private TimeSpan FrameDelay { get => _frameDelay; }
+    public TimeSpan FrameDelay { get => _frameDelay; }
 
     private TimeSpan _frameMinDelay;
-    private TimeSpan FrameMinDelay { get => _frameMinDelay; }
+    public TimeSpan FrameMinDelay { get => _frameMinDelay; }
 
     private int _frameRate;
     public int FrameRate
@@ -32,6 +33,7 @@ public class WebCam
             _frameRate = value;
             _frameDelay = TimeSpan.FromMilliseconds(1000d / _frameRate);
             _frameMinDelay = TimeSpan.FromMilliseconds(50d / _frameRate);
+            videoCapture.Set(VideoCaptureProperties.Fps, value);
         }
     }
 
@@ -43,14 +45,14 @@ public class WebCam
     #region WebCam
     public WebCam(int deviceId = 0, int fps = 60, VideoCaptureAPIs videoCaptureAPI = VideoCaptureAPIs.ANY)
     {
-        FrameRate = fps;
         matFrame = new Mat();
         WebCamDevice.Init();
         CurrentDeviceID = deviceId;
         videoCapture = CurrentDevice.CreateVideoCapture(videoCaptureAPI);
+        FrameRate = fps;
     }
 
-    public void Init()
+    public void Begin()
     {
         Task.Run(StartRunning);
     }
@@ -133,7 +135,19 @@ public class WebCam
         }
     }
 
-    public static Version GetVersion()
+    public void End()
+    {
+        IsRunning = false;
+    }
+
+    public void Dispose()
+    {
+        matFrame.Dispose();
+        videoCapture.Dispose();
+        image?.Dispose();
+    }
+
+public static Version GetVersion()
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
         Version? asmCloneVersion = (Version?)assembly.GetName().Version?.Clone();

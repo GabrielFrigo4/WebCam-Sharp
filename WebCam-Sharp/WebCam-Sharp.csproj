@@ -7,14 +7,14 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>WebCam-Sharp</Title>
-    <VersionPrefix>1.1.2</VersionPrefix>
+    <VersionPrefix>1.2.0</VersionPrefix>
     <PackageProjectUrl>https://github.com/GabrielFrigo4/WebCam-Sharp</PackageProjectUrl>
     <RepositoryUrl>https://github.com/GabrielFrigo4/WebCam-Sharp</RepositoryUrl>
     <PackageTags>WebCam</PackageTags>
     <PackageIcon>WebCam.png</PackageIcon>
     <Authors>Gabriel Frigo</Authors>
     <Description>WebCam lib for c#</Description>
-    <PackageReleaseNotes>Add VideoCaptureAPIs to Init and SetDevice in a WebCam</PackageReleaseNotes>
+    <PackageReleaseNotes>Add Begin, End and Dispose methods</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
