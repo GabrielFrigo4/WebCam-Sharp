@@ -14,7 +14,7 @@
     <PackageIcon>WebCam.png</PackageIcon>
     <Authors>Gabriel Frigo</Authors>
     <Description>WebCam lib for c#</Description>
-    <PackageReleaseNotes>Add VideoCaptureAPIs to Init a WebCam</PackageReleaseNotes>
+    <PackageReleaseNotes>Add VideoCaptureAPIs to Init and SetDevice in a WebCam</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

@@ -55,7 +55,7 @@ public class WebCam
         Task.Run(StartRunning);
     }
 
-    public async void SetDevice(int deviceId, bool async = true)
+    public async void SetDevice(int deviceId, VideoCaptureAPIs videoCaptureAPIs = VideoCaptureAPIs.ANY, bool async = true)
     {
         void SetTask()
         {
@@ -73,13 +73,13 @@ public class WebCam
         else await Task.Run(SetTask);
     }
 
-    public async void SetDevice(WebCamDevice device, bool async = true)
+    public async void SetDevice(WebCamDevice device, VideoCaptureAPIs videoCaptureAPIs = VideoCaptureAPIs.ANY, bool async = true)
     {
         void SetTask()
         {
             lock (SyncRoot)
             {
-                SetDevice(device.Id, async);
+                SetDevice(device.Id, videoCaptureAPIs, async);
             }
         }
 

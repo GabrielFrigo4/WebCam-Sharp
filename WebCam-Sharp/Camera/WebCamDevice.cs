@@ -38,7 +38,6 @@ public struct WebCamDevice
     public VideoCapture CreateVideoCapture(VideoCaptureAPIs videoCaptureAPIs = VideoCaptureAPIs.ANY)
     {
         VideoCapture videoCapture = new(this.Id, videoCaptureAPIs);
-        videoCapture.Open(this.Id);
         videoCapture.Set(VideoCaptureProperties.FrameHeight, int.MaxValue);
         videoCapture.Set(VideoCaptureProperties.FrameWidth, int.MaxValue);
         int width = (int)videoCapture.Get(VideoCaptureProperties.FrameWidth);
@@ -48,9 +47,9 @@ public struct WebCamDevice
         return videoCapture;
     }
 
-    public void UpdateVideoCapture(VideoCapture videoCapture)
+    public void UpdateVideoCapture(VideoCapture videoCapture, VideoCaptureAPIs videoCaptureAPIs = VideoCaptureAPIs.ANY)
     {
-        videoCapture.Open(this.Id);
+        videoCapture.Open(this.Id, videoCaptureAPIs);
         if (this.Size == new Size(-1,-1))
         {
             videoCapture.Set(VideoCaptureProperties.FrameHeight, int.MaxValue);
