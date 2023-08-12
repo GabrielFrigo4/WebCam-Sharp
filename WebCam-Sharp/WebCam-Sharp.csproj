@@ -7,13 +7,14 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>WebCam-Sharp</Title>
-    <VersionPrefix>1.1.0</VersionPrefix>
+    <VersionPrefix>1.1.1</VersionPrefix>
     <PackageProjectUrl>https://github.com/GabrielFrigo4/WebCam-Sharp</PackageProjectUrl>
     <RepositoryUrl>https://github.com/GabrielFrigo4/WebCam-Sharp</RepositoryUrl>
     <PackageTags>WebCam</PackageTags>
     <PackageIcon>WebCam.png</PackageIcon>
     <Authors>Gabriel Frigo</Authors>
     <Description>WebCam lib for c#</Description>
+    <PackageReleaseNotes>Fixed Bugs in Size of WebCamDevice</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

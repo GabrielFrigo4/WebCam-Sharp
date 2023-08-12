@@ -48,11 +48,22 @@ public struct WebCamDevice
         return videoCapture;
     }
 
-    public readonly void UpdateVideoCapture(VideoCapture videoCapture)
+    public void UpdateVideoCapture(VideoCapture videoCapture)
     {
         videoCapture.Open(this.Id);
-        videoCapture.Set(VideoCaptureProperties.FrameHeight, this.Size.Height);
-        videoCapture.Set(VideoCaptureProperties.FrameWidth, this.Size.Width);
+        if (this.Size == new Size(-1,-1))
+        {
+            videoCapture.Set(VideoCaptureProperties.FrameHeight, int.MaxValue);
+            videoCapture.Set(VideoCaptureProperties.FrameWidth, int.MaxValue);
+            int width = (int)videoCapture.Get(VideoCaptureProperties.FrameWidth);
+            int height = (int)videoCapture.Get(VideoCaptureProperties.FrameHeight);
+            this.Size = new(width, height);
+            this.Save();
+        }
+        else{
+            videoCapture.Set(VideoCaptureProperties.FrameHeight, this.Size.Height);
+            videoCapture.Set(VideoCaptureProperties.FrameWidth, this.Size.Width);
+        }
     }
 
     public readonly void Save()
