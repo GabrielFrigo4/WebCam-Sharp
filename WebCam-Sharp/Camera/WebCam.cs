@@ -44,14 +44,12 @@ public class WebCam
     #region WebCam
     public WebCam(int deviceId = 0, int fps = 60)
     {
+        Environment.SetEnvironmentVariable("OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS", "0");
         FrameRate = fps;
         matFrame = new Mat();
         Devices = GetDevices();
         CurrentDevice = Devices[deviceId];
-        videoCapture = CurrentDevice.VideoCapture;
-        videoCapture.Open(CurrentDevice.Id);
-        videoCapture.Set(VideoCaptureProperties.FrameHeight, CurrentDevice.Size.Height);
-        videoCapture.Set(VideoCaptureProperties.FrameWidth, CurrentDevice.Size.Width);
+        CurrentDevice.UpdateVideoCapture(out videoCapture);
     }
 
     public void Init()
@@ -68,10 +66,7 @@ public class WebCam
                 if (CurrentDevice != device)
                 {
                     CurrentDevice = device;
-                    videoCapture = CurrentDevice.VideoCapture;
-                    videoCapture.Open(CurrentDevice.Id);
-                    videoCapture.Set(VideoCaptureProperties.FrameHeight, CurrentDevice.Size.Height);
-                    videoCapture.Set(VideoCaptureProperties.FrameWidth, CurrentDevice.Size.Width);
+                    CurrentDevice.UpdateVideoCapture(out videoCapture);
                 }
             }
         }

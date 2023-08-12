@@ -25,6 +25,14 @@ public struct WebCamDevice
         Manufacturer = manufacturer;
     }
 
+    public void UpdateVideoCapture(out VideoCapture videoCapture)
+    {
+        videoCapture = this.VideoCapture;
+        videoCapture.Open(this.Id);
+        videoCapture.Set(VideoCaptureProperties.FrameHeight, this.Size.Height);
+        videoCapture.Set(VideoCaptureProperties.FrameWidth, this.Size.Width);
+    }
+
     public static bool operator ==(WebCamDevice wcd1, WebCamDevice wcd2)
     {
         return wcd1.Equals(wcd2);
