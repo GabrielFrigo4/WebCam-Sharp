@@ -35,9 +35,9 @@ public struct WebCamDevice
         this.Manufacturer = manufacturer;
     }
 
-    public VideoCapture CreateVideoCapture()
+    public VideoCapture CreateVideoCapture(VideoCaptureAPIs videoCaptureAPIs = VideoCaptureAPIs.ANY)
     {
-        VideoCapture videoCapture = new(this.Id);
+        VideoCapture videoCapture = new(this.Id, videoCaptureAPIs);
         videoCapture.Open(this.Id);
         videoCapture.Set(VideoCaptureProperties.FrameHeight, int.MaxValue);
         videoCapture.Set(VideoCaptureProperties.FrameWidth, int.MaxValue);

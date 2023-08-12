@@ -41,13 +41,13 @@ public class WebCam
     #endregion
 
     #region WebCam
-    public WebCam(int deviceId = 0, int fps = 60)
+    public WebCam(int deviceId = 0, int fps = 60, VideoCaptureAPIs videoCaptureAPIs = VideoCaptureAPIs.ANY)
     {
         FrameRate = fps;
         matFrame = new Mat();
         WebCamDevice.Init();
         CurrentDeviceID = deviceId;
-        videoCapture = CurrentDevice.CreateVideoCapture();
+        videoCapture = CurrentDevice.CreateVideoCapture(videoCaptureAPIs);
     }
 
     public void Init()
