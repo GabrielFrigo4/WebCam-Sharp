@@ -41,13 +41,13 @@ public class WebCam
     #endregion
 
     #region WebCam
-    public WebCam(int deviceId = 0, int fps = 60, VideoCaptureAPIs videoCaptureAPIs = VideoCaptureAPIs.ANY)
+    public WebCam(int deviceId = 0, int fps = 60, VideoCaptureAPIs videoCaptureAPI = VideoCaptureAPIs.ANY)
     {
         FrameRate = fps;
         matFrame = new Mat();
         WebCamDevice.Init();
         CurrentDeviceID = deviceId;
-        videoCapture = CurrentDevice.CreateVideoCapture(videoCaptureAPIs);
+        videoCapture = CurrentDevice.CreateVideoCapture(videoCaptureAPI);
     }
 
     public void Init()
@@ -55,7 +55,7 @@ public class WebCam
         Task.Run(StartRunning);
     }
 
-    public async void SetDevice(int deviceId, VideoCaptureAPIs videoCaptureAPIs = VideoCaptureAPIs.ANY, bool async = true)
+    public async void SetDevice(int deviceId, VideoCaptureAPIs videoCaptureAPI = VideoCaptureAPIs.ANY, bool async = true)
     {
         void SetTask()
         {
@@ -64,7 +64,7 @@ public class WebCam
                 if (CurrentDeviceID != deviceId)
                 {
                     CurrentDeviceID = deviceId;
-                    CurrentDevice.UpdateVideoCapture(videoCapture);
+                    CurrentDevice.UpdateVideoCapture(videoCapture, videoCaptureAPI);
                 }
             }
         }
@@ -73,13 +73,13 @@ public class WebCam
         else await Task.Run(SetTask);
     }
 
-    public async void SetDevice(WebCamDevice device, VideoCaptureAPIs videoCaptureAPIs = VideoCaptureAPIs.ANY, bool async = true)
+    public async void SetDevice(WebCamDevice device, VideoCaptureAPIs videoCaptureAPI = VideoCaptureAPIs.ANY, bool async = true)
     {
         void SetTask()
         {
             lock (SyncRoot)
             {
-                SetDevice(device.Id, videoCaptureAPIs, async);
+                SetDevice(device.Id, videoCaptureAPI, async);
             }
         }
 
