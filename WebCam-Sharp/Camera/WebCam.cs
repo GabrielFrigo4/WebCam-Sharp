@@ -147,7 +147,7 @@ public class WebCam: IDisposable
         image?.Dispose();
     }
 
-public static Version GetVersion()
+    public static Version GetVersion()
     {
         Assembly assembly = Assembly.GetExecutingAssembly();
         Version? asmCloneVersion = (Version?)assembly.GetName().Version?.Clone();
