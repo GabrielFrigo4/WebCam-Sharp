@@ -1,9 +1,5 @@
-﻿using OpenCvSharp;
-using OpenCvSharp.Extensions;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Reflection;
-
-using Size = System.Drawing.Size;
 
 namespace WebCam_Sharp.Camera;
 public class WebCam: IDisposable
