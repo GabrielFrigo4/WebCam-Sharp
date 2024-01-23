@@ -1,11 +1,15 @@
-﻿using System.Management;
+﻿using DirectShowLib;
+using OpenCvSharp;
+using System.Management;
 
 namespace WebCam_Sharp.Camera;
 public struct WebCamDevice
 {
-    public static WebCamDevice[] Devices { get; private set; } = Array.Empty<WebCamDevice>();
+    public static WebCamDevice[] Devices { get; private set; } = [];
 
     public int Id { get; private set; } = -1;
+    public int PNP_Id { get => Id; private set => Id = value; }
+    public int DirectShow_Id { get; private set; } = -1;
     public Size Size { get; private set; } = new(-1, -1);
 
     public string Caption { get; private set; } = string.Empty;
@@ -61,7 +65,7 @@ public struct WebCamDevice
 
     public VideoCapture CreateVideoCapture(VideoCaptureAPIs videoCaptureAPIs = VideoCaptureAPIs.ANY)
     {
-        VideoCapture videoCapture = new(this.Id, videoCaptureAPIs);
+        VideoCapture videoCapture = new(GetVideoCaptureID(videoCaptureAPIs), videoCaptureAPIs);
         videoCapture.Set(VideoCaptureProperties.FrameHeight, int.MaxValue);
         videoCapture.Set(VideoCaptureProperties.FrameWidth, int.MaxValue);
         int width = (int)videoCapture.Get(VideoCaptureProperties.FrameWidth);
@@ -73,8 +77,8 @@ public struct WebCamDevice
 
     public void UpdateVideoCapture(VideoCapture videoCapture, VideoCaptureAPIs videoCaptureAPIs = VideoCaptureAPIs.ANY)
     {
-        videoCapture.Open(this.Id, videoCaptureAPIs);
-        if (this.Size == new Size(-1,-1))
+        videoCapture.Open(GetVideoCaptureID(videoCaptureAPIs), videoCaptureAPIs);
+        if (this.Size == new Size(-1, -1))
         {
             videoCapture.Set(VideoCaptureProperties.FrameHeight, int.MaxValue);
             videoCapture.Set(VideoCaptureProperties.FrameWidth, int.MaxValue);
@@ -83,10 +87,21 @@ public struct WebCamDevice
             this.Size = new(width, height);
             this.Save();
         }
-        else{
+        else
+        {
             videoCapture.Set(VideoCaptureProperties.FrameHeight, this.Size.Height);
             videoCapture.Set(VideoCaptureProperties.FrameWidth, this.Size.Width);
         }
+    }
+
+    public int GetVideoCaptureID(VideoCaptureAPIs videoCaptureAPIs)
+    {
+        return videoCaptureAPIs switch
+        {
+            VideoCaptureAPIs.DSHOW => this.DirectShow_Id,
+            VideoCaptureAPIs.MSMF => this.PNP_Id,
+            _ => this.Id,
+        };
     }
 
     public readonly void Save()
@@ -98,7 +113,7 @@ public struct WebCamDevice
     {
         List<(string, string, string[], string,
             string, string[], string, string,
-            string, string, string)> cameraInfos = new();
+            string, string, string)> cameraInfos = [];
 
         string queryCode = "SELECT * FROM Win32_PnPEntity WHERE (PNPClass = 'Image' OR PNPClass = 'Camera')";
         using (ManagementObjectSearcher searcher = new(queryCode))
@@ -158,6 +173,7 @@ public struct WebCamDevice
             }
         }
 
+        string[] names = GetDirectShow_DeviceNames();
         Devices = new WebCamDevice[cameraInfos.Count];
         Parallel.For(0, cameraInfos.Count, (id) =>
         {
@@ -166,7 +182,40 @@ public struct WebCamDevice
             Devices[id] = new(id, _tup.Item1, _tup.Item2, _tup.Item3,
                 _tup.Item4, _tup.Item5, _tup.Item6, _tup.Item7,
                 _tup.Item8, _tup.Item9, _tup.Item10, _tup.Item11);
+
+            for (int i = 0; i < names.Length; i++)
+            {
+                if (names[i] == Devices[id].Name)
+                {
+                    Devices[id].DirectShow_Id = i;
+                    break;
+                }
+            }
         });
+    }
+
+    public static string[] GetDirectShow_DeviceNames()
+    {
+        List<string> cameraNames = [];
+        DsDevice[] devices = DsDevice.GetDevicesOfCat(FilterCategory.VideoInputDevice);
+
+        foreach (var device in devices)
+        {
+            cameraNames.Add(device.Name);
+            device.Dispose();
+        }
+
+        return [.. cameraNames];
+    }
+
+    public static string[] GetPNP_DeviceNames()
+    {
+        List<string> cameraNames = [];
+
+        foreach (var device in Devices)
+            cameraNames.Add(device.Name);
+
+        return [.. cameraNames];
     }
 
     public static bool operator ==(WebCamDevice wcd1, WebCamDevice wcd2)
